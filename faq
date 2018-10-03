@@ -1,0 +1,247 @@
+faq
+
+консоль:
+- ssh-keygen -t rsa -b 4096 -C "your_mail@example.com"  (почту с гита)
+- eval "$(ssh-agent -s)"
+- ssh-add ~/.ssh/your_key_name (путь свой)
+- clip < ~/.ssh/id_rsa.pub (копировать ключ для гита)
+- git clone clone git@github.com:_your-nickname_/_your-project_.git - клонировать реп (ssh ссылка на гитхаб),
+- cd адрес папки - войти в папку репа.
+
+установить Node, в папке проекта нужен файл пекедж.json, создать нужные папки и файлы(img, css и тп.)
+
+консоль:
+npm i -g grunt grunt-cli - установка Гранта
+npm i --save-dev grunt-contrib-less - установка Less
+
+конфиг гранта Gruntfile.js создаем в папку проекта
+
+
+консоль:
+npm i - устанавливаем все зависимости
+
+создаем файл less/style.less с тест кодом body { background: red; }
+npm run build
+консоль:
+- npm run build команда одноразовой сборки, в папке css должен появитьмся файл style.css. Подключить его на страницу-проверить применились ли стили.
+- npm start - постоянная автосборка. делаем изменения в коде-видим изменения на странице браузера.
+
+
+---------
+npm
+
+npm i <package_name> - устанавливаем все зависимости в package.json в секцию Dependencies - секция с зависимостями для того, чтобы проект работал в продакшене
+
+npm i --save-dev <package_name> (npm i -d <package_name>)- устанавливаем зависимости в package.json в секцию devDependencies - секция с зависимостями для режима development'а(разработки), чтобы собрать проект.
+
+npm install --save-dev load-grunt-tasks - установка всех пакетов-плагинов ("grunt-") из package.json.
+
+  npm install grunt-uncss --save-dev - Удаляем неиспользованные классы в css
+  grunt.loadNpmTasks('grunt-uncss');
+
+  npm install --save-dev grunt-svgmin - минификатор svg
+  require('load-grunt-tasks')(grunt);
+
+  npm install grunt-svgstore --save-dev - svg спрайт
+  grunt.loadNpmTasks('grunt-svgstore');
+
+  npm install --save-dev grunt-contrib-imagemin - минификатор изображений
+  grunt.loadNpmTasks('grunt-contrib-imagemin');
+
+  npm install grunt-contrib-clean --save-dev - удаляет файлы (сначала clean, потом copy)
+  grunt.loadNpmTasks('grunt-contrib-clean');
+
+  npm install grunt-contrib-copy --save-dev -копирует файлы
+  grunt.loadNpmTasks('grunt-contrib-copy');
+
+  npm install grunt-csso - минификатор css
+
+  mq-packer - объединяет все медиавыражения, подключается в postcss(является его плагином) в блок processors.
+
+пример Gruntfile.js
+
+  module.exports = function(grunt) {
+
+    require('load-grunt-tasks')(grunt);
+    grunt.initConfig({
+      less: {
+        style: {
+          files: {
+            "build/css/style.css": "less/style.less"
+          }
+        }
+      },
+
+      postcss: {
+        style: {
+          options: {
+            processors: [
+              require("autoprefixer")({browsers: [
+                "last 2 versions"
+              ]}),
+              require("css-mqpacker")({
+                sort: true
+              })
+            ]
+          },
+          src: "build/css/*.css"
+        }
+      },
+
+      browserSync: {
+        server: {
+          bsFiles: {
+            src: [
+              "build/*.html",
+              "build/css/*.css"
+            ]
+          },
+          options: {
+            server: "build/",
+            watchTask: true,
+            notify: false,
+            open: true,
+            cors: true,
+            ui: false
+          }
+        }
+      },
+
+      watch: {
+        html: {
+          files: ["*.html"],
+          tasks: ["copy:html"]
+        },
+        style: {
+          files: ["less/**/*.less"],
+          tasks: ["less", "postcss", "csso"]
+        }
+      }
+
+      csso: {
+        style: {
+          options: {
+            report: "gzip"
+          },
+          files: {
+            "build/css/style.min.css": ["build/css/style.css"]
+          }
+        }
+      },
+
+      uncss: {
+        style: {
+          dist: {
+              files: {
+                "build/css/tidy.css": ["*.html"]
+            }
+          }
+        }
+      },
+
+      imagemin: {
+        images: {
+          options: {
+            optimizationLevel: 3,
+            progressive: true
+          },
+          files: [{
+            expand: true,
+            src: ["build/img/**/*.{png,jpg,gif}"]
+          }]
+        }
+      },
+
+      svgstore: {
+        options: {
+          svg: {
+            style: "display: none"
+          }
+        },
+        symbols: {
+          files: {
+            "build/img/symbols.svg": ["img/icons/*.svg"]
+          }
+        }
+      },
+
+      svgmin: {
+        symbols: {
+          files: [{
+            expand: true,
+            src: ["build/img/icons/*.svg"]
+          }]
+        }
+      },
+
+      copy: {
+        build: {
+          files: [{
+            expand: true,
+            src: [
+              "fonts/**/*.{woff, woff2}",
+              "img/**",
+              "js/**",
+              ".html"
+            ],
+            dest: "build"
+          }]
+        },
+        html: {
+          files: [{
+            expand: true,
+            src: ["*.html"],
+            dest: "build"
+          }]
+        }
+      },
+
+      clean: {
+        build: ["build"]
+      }
+    });
+
+    grunt.registerTask("serve", ["browserSync", "watch"]);
+    grunt.registerTask("symbols",["svgmin", "svgstore"]);
+    grunt.registerTask("build", [
+      "clean",
+      "copy",
+      "less",
+      "postcss",
+      "uncss",
+      "csso",
+      "symbols",
+      "imagemin"
+      ]);
+};
+
+------
+Сборка в продакшн
+
+  -Создаем папку build и убираем ее в .gitignore
+  -Перед сборкой копируем все неоходимое в build
+  -Все оптимизации проводим в папке build
+  -Удаляем лишнее
+
+"scripts": {
+    "editorconfig": "editorconfig-cli",
+    "stylelint": "stylelint 'source/less/**/*.less' --syntax less",
+    "test": "npm run editorconfig && npm run stylelint",
+    "build": "grunt build",
+    "start": "npm run build && grunt serve"
+  },
+
+
+-----------------
+bootstrap
+можно взять для любого проекта:
+  нормализатор
+  базовые стили(scaffoldiing.less)
+  типографику(параграфы, отступы и тп), кнопки
+  модульные сетки
+  применилисьединичные компоненты, вроде табов
+
+оптимизация кода фреймворка
+  отключать импорт компонентов в файле диспетчере подключений
+  модификация самих файлов или дублирование файлов с модификацией дубликатов
+
