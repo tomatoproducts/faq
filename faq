@@ -1,40 +1,26 @@
-faq
+установить Node, создать нужные папки и файлы(img, css и тп.), а также файлы Gruntfile.js, package.json.
 
-консоль:
-- ssh-keygen -t rsa -b 4096 -C "your_mail@example.com"  (почту с гита)
-- eval "$(ssh-agent -s)"
-- ssh-add ~/.ssh/your_key_name (путь свой)
-- clip < ~/.ssh/id_rsa.pub (копировать ключ для гита)
+начало работы с консолью, список команд:
+
+- ssh-keygen -t rsa -b 4096 -C "your_mail@example.com"  (почту с гита) - создание ssh-ключа
+- clip < ~/.ssh/id_rsa.pub (копировать ключ для гита) после создания ключ нужно добавить в профиль на гите.
+- eval "$(ssh-agent -s)" - запуск агента
+- ssh-add ~/.ssh/your_key_name (путь свой) - добавление ключа/идентификация
 - git clone clone git@github.com:_your-nickname_/_your-project_.git - клонировать реп (ssh ссылка на гитхаб),
 - cd адрес папки - войти в папку репа.
 
-установить Node, в папке проекта нужен файл пекедж.json, создать нужные папки и файлы(img, css и тп.)
-
-консоль:
+------------------------------------------
 npm i -g grunt grunt-cli - установка Гранта
-npm i --save-dev grunt-contrib-less - установка Less
 
-конфиг гранта Gruntfile.js создаем в папку проекта
-
-
-консоль:
-npm i - устанавливаем все зависимости
-
-создаем файл less/style.less с тест кодом body { background: red; }
-npm run build
-консоль:
-- npm run build команда одноразовой сборки, в папке css должен появитьмся файл style.css. Подключить его на страницу-проверить применились ли стили.
-- npm start - постоянная автосборка. делаем изменения в коде-видим изменения на странице браузера.
-
-
----------
-npm
+устанавливаем все нужные плагины:
 
 npm i <package_name> - устанавливаем все зависимости в package.json в секцию Dependencies - секция с зависимостями для того, чтобы проект работал в продакшене
 
-npm i --save-dev <package_name> (npm i -d <package_name>)- устанавливаем зависимости в package.json в секцию devDependencies - секция с зависимостями для режима development'а(разработки), чтобы собрать проект.
+npm i --save-dev <package_name> (npm i -d <package_name>)- устанавливаем зависимости в package.json в секцию devDependencies - секция с зависимостями для режима development`а(разработки), чтобы собрать проект.
 
-npm install --save-dev load-grunt-tasks - установка всех пакетов-плагинов ("grunt-") из package.json.
+npm install --save-dev load-grunt-tasks - установка всех пакетов-плагинов ("grunt-") из package.json
+
+плагины к установке:
 
   npm install grunt-uncss --save-dev - Удаляем неиспользованные классы в css
   grunt.loadNpmTasks('grunt-uncss');
@@ -58,8 +44,9 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
 
   mq-packer - объединяет все медиавыражения, подключается в postcss(является его плагином) в блок processors.
 
-пример Gruntfile.js
+Пример Gruntfile.js
 
+  "use strict";
   module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
@@ -215,13 +202,16 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
       ]);
 };
 
-------
+----------------------------------
+
 Сборка в продакшн
 
   -Создаем папку build и убираем ее в .gitignore
   -Перед сборкой копируем все неоходимое в build
   -Все оптимизации проводим в папке build
   -Удаляем лишнее
+
+Для package.json`a
 
 "scripts": {
     "editorconfig": "editorconfig-cli",
@@ -231,8 +221,8 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
     "start": "npm run build && grunt serve"
   },
 
+-------------------------------
 
------------------
 bootstrap
 можно взять для любого проекта:
   нормализатор
@@ -244,4 +234,3 @@ bootstrap
 оптимизация кода фреймворка
   отключать импорт компонентов в файле диспетчере подключений
   модификация самих файлов или дублирование файлов с модификацией дубликатов
-
