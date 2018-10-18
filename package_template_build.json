@@ -1,0 +1,55 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Личный проект",
+  "devDependencies": {
+    "@htmlacademy/editorconfig-cli": "1.x",
+    "autoprefixer": "7.2.x",
+    "css-mqpacker": "^7.0.0",
+    "grunt": "1.0.x",
+    "grunt-browser-sync": "2.2.x",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-imagemin": "^2.0.1",
+    "grunt-contrib-less": "^1.4.1",
+    "grunt-contrib-watch": "1.0.x",
+    "grunt-csso": "^2.2.1",
+    "grunt-cwebp": "^2.1.1",
+    "grunt-postcss": "0.9.x",
+    "grunt-posthtml": "^0.5.0",
+    "grunt-svgmin": "^5.0.0",
+    "grunt-svgstore": "^1.0.0",
+    "grunt-uncss": "^0.8.5",
+    "load-grunt-tasks": "^4.0.0",
+    "posthtml-include": "^1.2.0",
+    "stylelint": "8.4.x",
+    "stylelint-config-htmlacademy": "0.1.x"
+  },
+  "scripts": {
+    "editorconfig": "editorconfig-cli",
+    "stylelint": "stylelint 'source/less/**/*.less' --syntax less",
+    "test": "npm run editorconfig && npm run stylelint",
+    "build": "grunt build",
+    "start": "npm run build && grunt serve"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "IE 11",
+    "Firefox ESR"
+  ],
+  "editorconfig-cli": [
+    "*.json",
+    "*.js",
+    "source/*.html",
+    "source/js/**/*.js",
+    "source/img/**/*.svg",
+    "source/less/**/*.less"
+  ],
+  "engines": {
+    "node": "8.9"
+  },
+  "dependencies": {
+    "grunt": "^1.0.3"
+  }
+}

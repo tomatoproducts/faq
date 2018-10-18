@@ -22,27 +22,34 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
 
 плагины к установке:
 
-  npm install grunt-uncss --save-dev - Удаляем неиспользованные классы в css
++  npm install --save-dev grunt-cwebp - создание изображений в формате WebP
+  grunt.loadNpmTasks('grunt-cwebp');
+
++  npm install grunt-posthtml --save-dev - postHtml
+  npm i --save-dev posthtml-include
+  grunt.loadNpmTasks('grunt-posthtml');
+
++  npm install grunt-uncss --save-dev - Удаляем неиспользованные классы в css
   grunt.loadNpmTasks('grunt-uncss');
 
-  npm install --save-dev grunt-svgmin - минификатор svg
++  npm install --save-dev grunt-svgmin - минификатор svg
   require('load-grunt-tasks')(grunt);
 
-  npm install grunt-svgstore --save-dev - svg спрайт
++  npm install grunt-svgstore --save-dev - svg спрайт
   grunt.loadNpmTasks('grunt-svgstore');
 
-  npm install --save-dev grunt-contrib-imagemin - минификатор изображений
++  npm install --save-dev grunt-contrib-imagemin - минификатор изображений
   grunt.loadNpmTasks('grunt-contrib-imagemin');
 
-  npm install grunt-contrib-clean --save-dev - удаляет файлы (сначала clean, потом copy)
++  npm install grunt-contrib-clean --save-dev - удаляет файлы (сначала clean, потом copy)
   grunt.loadNpmTasks('grunt-contrib-clean');
 
-  npm install grunt-contrib-copy --save-dev -копирует файлы
++  npm install grunt-contrib-copy --save-dev -копирует файлы
   grunt.loadNpmTasks('grunt-contrib-copy');
 
-  npm install grunt-csso - минификатор css
++  npm install grunt-csso --save-dev - минификатор css
 
-  mq-packer - объединяет все медиавыражения, подключается в postcss(является его плагином) в блок processors.
++  npm install css-mqpacker --save-dev - объединяет все медиавыражения, подключается в postcss(является его плагином) в блок processors.
 
 Пример Gruntfile.js
 
@@ -54,7 +61,7 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
       less: {
         style: {
           files: {
-            "build/css/style.css": "less/style.less"
+            "build/css/style.css": "source/less/style.less"
           }
         }
       },
@@ -74,6 +81,108 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
           src: "build/css/*.css"
         }
       },
+
+      uncss: {
+        style: {
+          dist: {
+              files: {
+                "build/css/tidy.css": ["*.html"]
+            }
+          }
+        }
+      },
+
+      csso: {
+        style: {
+          options: {
+            report: "gzip"
+          },
+          files: {
+            "build/css/style.min.css": ["build/css/style.css"]
+          }
+        }
+      },
+
+      svgstore: {
+        options: {
+          includeTitleElement: false
+        },
+        sprite: {
+          files: {
+            "build/img/sprite.svg": ["source/img/icons-*.svg"]
+          }
+        }
+      },
+
+      posthtml: {
+        options: {
+          use: [
+            require("posthtml-include")()
+          ]
+        },
+        html: {
+          files: [{
+            expand: true,
+            src: ["source/*.html"],
+            dest: "build"
+          }]
+        }
+      },
+
+      imagemin: {
+        images: {
+          options: {
+            optimizationLevel: 3,
+            progressive: true
+          },
+          files: [{
+            expand: true,
+            src: ["build/img/**/*.{png,jpg,gif}"]
+          }]
+        }
+      },
+
+      cwebp: {
+        images: {
+          options: {
+            q: 80
+          },
+          files: [{
+            expand: true,
+            src: ["build/img/**/*.{png,jpg}"]
+          }]
+        }
+      },
+
+      svgmin: {
+        symbols: {
+          files: [{
+            expand: true,
+            src: ["build/img/icons/*.svg"]
+          }]
+        }
+      },
+
+      copy: {
+        build: {
+          files: [{
+            expand: true,
+            cwd: "source",
+            src: [
+              "fonts/**/*.{woff, woff2}",
+              "img/**",
+              "js/**",
+              ".html"
+            ],
+            dest: "build"
+          }]
+        }
+      },
+
+      clean: {
+        build: ["build"]
+      },
+
 
       browserSync: {
         server: {
@@ -96,100 +205,18 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
 
       watch: {
         html: {
-          files: ["*.html"],
-          tasks: ["copy:html"]
+          files: ["source/*.html"],
+          tasks: ["posthtml"]
         },
         style: {
-          files: ["less/**/*.less"],
+          files: ["source/less/**/*.less"],
           tasks: ["less", "postcss", "csso"]
         }
-      }
-
-      csso: {
-        style: {
-          options: {
-            report: "gzip"
-          },
-          files: {
-            "build/css/style.min.css": ["build/css/style.css"]
-          }
-        }
-      },
-
-      uncss: {
-        style: {
-          dist: {
-              files: {
-                "build/css/tidy.css": ["*.html"]
-            }
-          }
-        }
-      },
-
-      imagemin: {
-        images: {
-          options: {
-            optimizationLevel: 3,
-            progressive: true
-          },
-          files: [{
-            expand: true,
-            src: ["build/img/**/*.{png,jpg,gif}"]
-          }]
-        }
-      },
-
-      svgstore: {
-        options: {
-          svg: {
-            style: "display: none"
-          }
-        },
-        symbols: {
-          files: {
-            "build/img/symbols.svg": ["img/icons/*.svg"]
-          }
-        }
-      },
-
-      svgmin: {
-        symbols: {
-          files: [{
-            expand: true,
-            src: ["build/img/icons/*.svg"]
-          }]
-        }
-      },
-
-      copy: {
-        build: {
-          files: [{
-            expand: true,
-            src: [
-              "fonts/**/*.{woff, woff2}",
-              "img/**",
-              "js/**",
-              ".html"
-            ],
-            dest: "build"
-          }]
-        },
-        html: {
-          files: [{
-            expand: true,
-            src: ["*.html"],
-            dest: "build"
-          }]
-        }
-      },
-
-      clean: {
-        build: ["build"]
       }
     });
 
     grunt.registerTask("serve", ["browserSync", "watch"]);
-    grunt.registerTask("symbols",["svgmin", "svgstore"]);
+    grunt.registerTask("sprite",["svgmin", "svgstore"]);
     grunt.registerTask("build", [
       "clean",
       "copy",
@@ -197,8 +224,10 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
       "postcss",
       "uncss",
       "csso",
-      "symbols",
-      "imagemin"
+      "sprite",
+      "posthtml",
+      "imagemin",
+      "cwebp"
       ]);
 };
 
@@ -206,9 +235,9 @@ npm install --save-dev load-grunt-tasks - установка всех пакет
 
 Сборка в продакшн
 
-  -Создаем папку build и убираем ее в .gitignore
-  -Перед сборкой копируем все неоходимое в build
-  -Все оптимизации проводим в папке build
+  -Создаем папку build/ и убираем ее в .gitignore
+  -Перед сборкой копируем все неоходимое в build/
+  -Все оптимизации проводим в папке build/
   -Удаляем лишнее
 
 Для package.json`a
